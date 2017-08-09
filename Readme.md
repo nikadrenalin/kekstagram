@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Станислав Скопенко](https://up.htmlacademy.ru/javascript/10/user/401391).
-* Наставник: `Неизвестно`.
+* Наставник: Никита Пиковец.
 
 ---
 
