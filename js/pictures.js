@@ -10,6 +10,8 @@
   var templateImgs = document.querySelector('#picture-template');
   var pictures = document.querySelector('.pictures');
   var DATA = getTestData(COMMENTS);
+  var ESC_KEYCODE = 27;
+  var ENTER_KEYCODE = 13;
 
 
   if (supportsTemplate()) {
@@ -17,9 +19,33 @@
   }
 
   printImages(pictures, templateImgs, DATA);
-  showImage(DATA[0]);
+  addEventOpenImages();
+  document.addEventListener('keydown', onOpenImageByEnter);
 
+  // Open popup by click on Enter
+  function onOpenImageByEnter(evt) {
+    if (evt.keyCode === ENTER_KEYCODE && evt.target.classList.contains('picture')) {
+      evt.preventDefault();
+      showImage(evt.target);
+    }
+  }
 
+  // Close popup by click on Esc
+  function onCloseImageByEsc(evt) {
+    if (evt.keyCode === ESC_KEYCODE || evt.keyCode === ENTER_KEYCODE && evt.target.classList.contains('gallery-overlay-close')) {
+      hideImage();
+    }
+  }
+
+  // Add event open images
+  function addEventOpenImages() {
+    document.addEventListener('click', function (evt) {
+      if (evt.target.parentNode.classList.contains('picture')) {
+        evt.preventDefault();
+        showImage(evt.target.parentNode);
+      }
+    });
+  }
   // Check support 'template' tag
   function supportsTemplate() {
     return 'content' in document.createElement('template');
@@ -37,7 +63,7 @@
     for (i; i < count; i++) {
       obj.url = 'photos/' + (i + 1) + '.jpg';
       obj.likes = getRandomNumber(15, 200);
-      obj.comments = commentsArr[Math.floor(Math.random() * commentsArr.length)];
+      obj.comments = getRandomNumber(15, 200);
       result.push(obj);
       obj = {};
     }
@@ -45,16 +71,31 @@
     return result;
   }
 
-  // Show single image
-  function showImage(data) {
+  // Hide gallery overlay popup
+  function hideImage() {
     var gallery = document.querySelector('.gallery-overlay');
+    var galleryOverlayClose = document.querySelector('.gallery-overlay-close');
+    galleryOverlayClose.removeEventListener('click', hideImage);
+    gallery.removeEventListener('keydown', onCloseImageByEsc);
+    document.addEventListener('keydown', onOpenImageByEnter);
+
+    gallery.classList.add('hidden');
+  }
+
+  // Show single image
+  function showImage(item) {
+    var gallery = document.querySelector('.gallery-overlay');
+    var galleryOverlayClose = document.querySelector('.gallery-overlay-close');
+
+    gallery.querySelector('.gallery-overlay-image').setAttribute('src', item.querySelector('img').getAttribute('src'));
+    gallery.querySelector('.likes-count').textContent = item.querySelector('.picture-likes').textContent;
+    gallery.querySelector('.comments-count').textContent = item.querySelector('.picture-comments').textContent;
+
+    document.removeEventListener('keydown', onOpenImageByEnter);
+    document.addEventListener('keydown', onCloseImageByEsc);
+    galleryOverlayClose.addEventListener('click', hideImage);
 
     gallery.classList.toggle('hidden');
-
-    gallery.querySelector('.gallery-overlay-image').setAttribute('src', data.url);
-    gallery.querySelector('.likes-count').textContent = data.likes;
-    gallery.querySelector('.comments-count').textContent = COMMENTS.length;
-
   }
 
   // Print personages in DOM
