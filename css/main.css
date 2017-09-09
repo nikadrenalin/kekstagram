@@ -101,6 +101,7 @@ body {
 }
 
 .upload-effect {
+  width:  90%;
   position: relative;
   margin: 0 auto;
 }
@@ -859,4 +860,10 @@ input[type=radio]:checked + .upload-effect-label .upload-effect-preview {
 
 .footer-social-item-vk {
   background-position: -84px 0;
+}
+
+input:focus:invalid, textarea:focus:invalid{
+  border-color: red !important;
+  -webkit-box-shadow: inset 0 1px 1px red;
+  box-shadow: inset 0 1px 1px red;
 }

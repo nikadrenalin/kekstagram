@@ -1,9 +1,7 @@
-(function(){
-  'use strict';
-
-
-  var ESC_KEYCODE = 27;
-  var ENTER_KEYCODE = 13;
+/**
+ * Created by Nikita on 09.09.2017.
+ */
+var Form = (function(){
   var MAX_HASHTAGS = 5;
   var MAX_LENGTH_HASHTAG = 20;
   var options = {
@@ -28,11 +26,6 @@
 
     return obj;
   })();
-
-
-  // addEventOpenImages();
-  addEventOpenDownloadOverlayForm();
-  document.addEventListener('keydown', onOpenImageByEnter);
 
   // Add event '#upload-file' form
   function addEventOpenDownloadOverlayForm () {
@@ -173,100 +166,10 @@
     $uploadOverlay.classList.add('hidden');
   }
 
-  // Open popup by click on Enter
-  function onOpenImageByEnter(evt) {
-    if (evt.keyCode === ENTER_KEYCODE && evt.target.classList.contains('picture')) {
-      evt.preventDefault();
-      showImage(evt.target);
+  return {
+    init: function(){
+
+      addEventOpenDownloadOverlayForm();
     }
   }
-
-  // Close popup by click on Esc
-  function onCloseImageByEsc(evt) {
-    if (evt.keyCode === ESC_KEYCODE || evt.keyCode === ENTER_KEYCODE && evt.target.classList.contains('gallery-overlay-close')) {
-      hideImage();
-    }
-  }
-
-
-  // Check support 'template' tag
-  function supportsTemplate() {
-    return 'content' in document.createElement('template');
-  }
-
-  // Generate test data
-  function getTestData(commentsArr, count) {
-    var i = 0;
-    var obj = {};
-    var result = [];
-
-    if (!count) {
-      count = 25;
-    }
-    for (i; i < count; i++) {
-      obj.url = 'photos/' + (i + 1) + '.jpg';
-      obj.likes = getRandomNumber(15, 200);
-      obj.comments = getRandomNumber(15, 200);
-      result.push(obj);
-      obj = {};
-    }
-
-    return result;
-  }
-
-  // Hide gallery overlay popup
-  function hideImage() {
-    var gallery = document.querySelector('.gallery-overlay');
-    var galleryOverlayClose = document.querySelector('.gallery-overlay-close');
-    galleryOverlayClose.removeEventListener('click', hideImage);
-    gallery.removeEventListener('keydown', onCloseImageByEsc);
-    document.addEventListener('keydown', onOpenImageByEnter);
-
-    gallery.classList.add('hidden');
-  }
-
-  // Show single image
-  function showImage(item) {
-    var gallery = document.querySelector('.gallery-overlay');
-    var galleryOverlayClose = document.querySelector('.gallery-overlay-close');
-
-    gallery.querySelector('.gallery-overlay-image').setAttribute('src', item.querySelector('img').getAttribute('src'));
-    gallery.querySelector('.likes-count').textContent = item.querySelector('.picture-likes').textContent;
-    gallery.querySelector('.comments-count').textContent = item.querySelector('.picture-comments').textContent;
-
-    document.removeEventListener('keydown', onOpenImageByEnter);
-    document.addEventListener('keydown', onCloseImageByEsc);
-    galleryOverlayClose.addEventListener('click', hideImage);
-
-    gallery.classList.toggle('hidden');
-  }
-
-  // Print personages in DOM
-  function printImages(container, template, data) {
-    var i = 0;
-    var templateHtml = null;
-    var fragment = document.createDocumentFragment();
-
-    for (i; i < data.length; i++) {
-      templateHtml = parseImgTemplate(template, data[i]);
-      fragment.appendChild(templateHtml);
-    }
-    container.appendChild(fragment);
-
-    function parseImgTemplate(templateTag, item) {
-      templateTag = templateTag.cloneNode(true);
-
-      templateTag.querySelector('img').setAttribute('src', item.url);
-      templateTag.querySelector('.picture-likes').textContent = item.likes;
-      templateTag.querySelector('.picture-comments').textContent = item.comments;
-
-      return templateTag;
-    }
-  }
-
-  // Return random on range
-  function getRandomNumber(min, max) {
-    return Math.round(Math.random() * (max - min) + min);
-  }
-
-}());
+})();
