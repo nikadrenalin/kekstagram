@@ -47,27 +47,18 @@ var Form = (function(){
     $uploadFile.addEventListener('change', function() {
       document.addEventListener('keydown', addEventKeydownCloseDownloadOverlayForm);
       InitializeScale.init($cache.uploadResizeControls, adjustScale);
-      $cache.uploadEffectControls.addEventListener('click', onChangeEffectImage);
+      InitializeFilters.init($cache.uploadEffectControls, adjustFilter);
       document.addEventListener('click', addEventClickCloseDownloadOverlayForm);
       $uploadSubmit.addEventListener('click', onClickUploadOverlayForm);
       $uploadOverlay.classList.remove('hidden');
     });
   }
 
-  // Add event for change image effect
-  function onChangeEffectImage (evt) {
-    var check1 = isParent(options.uploadEffectLabel, evt.target);
-    var $inputs = null;
-    var i = 0;
-
-    if (check1) {
-      $inputs = $cache.uploadEffectControls.querySelectorAll('input[type="radio"]');
-      for (i; i < $inputs.length; i++) {
-        $inputs[i].removeAttribute('checked');
-      }
-      check1.previousElementSibling.setAttribute('checked', 'checked');
-      $cache.effectImagePreview.setAttribute('class', options.effectImagePreview + ' effect-' + check1.previousElementSibling.getAttribute('value'));
-      addChangeEffectOnDrag(check1.previousElementSibling.getAttribute('value'));
+  // Adjust filter for image
+  function adjustFilter (filter) {
+    if (filter) {
+      $cache.effectImagePreview.setAttribute('class', options.effectImagePreview + ' effect-' + filter);
+      addChangeEffectOnDrag(filter);
     }
   }
 
@@ -154,53 +145,6 @@ var Form = (function(){
     }
   }
 
-  // Check has parent
-  function isParent(parentClass, child) {
-    var node = child.parentNode;
-    while (node !== null) {
-      if (node.classList && node.classList.contains(parentClass)) {
-        return node;
-      }
-      node = node.parentNode;
-    }
-    return false;
-  }
-
-  // Add events for change image scale
-  function onChangeScaleImage (evt) {
-    var check1 = evt.target.classList.contains(options.uploadResizeControlsButtonInc);
-    var check2 = evt.target.classList.contains(options.uploadResizeControlsButtonDec);
-    var $uploadResizeControlsValueElement = null;
-    var uploadResizeControlsValue = null;
-
-    if (check1 || check2) {
-      $uploadResizeControlsValueElement = $cache.uploadSelectImageForm.querySelector('input.upload-resize-controls-value');
-      uploadResizeControlsValue = parseInt($uploadResizeControlsValueElement.getAttribute('value').replace('%',''));
-
-      if (check1) {
-        if (uploadResizeControlsValue < 100) {
-          uploadResizeControlsValue += 25;
-          if (uploadResizeControlsValue < 100) {
-            $cache.effectImagePreview.style.transform = 'scale(0.' + uploadResizeControlsValue + ')';
-          } else {
-            $cache.effectImagePreview.style.transform = 'scale(1)';
-          }
-          $uploadResizeControlsValueElement.setAttribute('value', uploadResizeControlsValue + '%');
-        }
-      } else if (check2) {
-        if (uploadResizeControlsValue > 25) {
-          uploadResizeControlsValue -= 25;
-          if (uploadResizeControlsValue < 100) {
-            $cache.effectImagePreview.style.transform = 'scale(0.' + uploadResizeControlsValue + ')';
-          } else {
-            $cache.effectImagePreview.style.transform = 'scale(1)';
-          }
-          $uploadResizeControlsValueElement.setAttribute('value', uploadResizeControlsValue + '%');
-        }
-      }
-    }
-  }
-
   // Submit upload overlay form
   function onClickUploadOverlayForm() {
     var hashTags = null;
@@ -245,7 +189,7 @@ var Form = (function(){
       closeUploadOverlayForm();
     }
   }
-  
+
   // Set scale style for download image
   function adjustScale (scale) {
     $cache.effectImagePreview.style.transform = 'scale(' +  scale / 100 + ')';
@@ -262,6 +206,7 @@ var Form = (function(){
     document.removeEventListener('click', addEventClickCloseDownloadOverlayForm);
     $uploadSubmit.removeEventListener('click', onClickUploadOverlayForm);
     InitializeScale.unload();
+    InitializeFilters.unload();
     $uploadOverlay.classList.add('hidden');
   }
 

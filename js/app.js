@@ -27,7 +27,19 @@ var App = (function(){
       }
 
       return Math.round(Math.random() * (max - min) + min);
+    },
+
+    // Check has parent
+    isParent: function (parentClass, child) {
+    var node = child.parentNode;
+    while (node !== null) {
+      if (node.classList && node.classList.contains(parentClass)) {
+        return node;
+      }
+      node = node.parentNode;
     }
+    return false;
+  }
   }
 })();
 
